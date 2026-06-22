@@ -42,39 +42,36 @@
       <div class="day-tabs" id="dayTabs"></div>
     </div>
 
-    <div class="day-header">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
-        <div>
-          <div class="date" id="currentDate"></div>
-          <h2 id="currentTitle"></h2>
-        </div>
-        <!-- NEW: Live Weather Badge -->
-        <div class="live-weather" id="liveWeather">
-          <i class="fa-solid fa-spinner fa-spin"></i> Loading weather...
-        </div>
-      </div>
-      
-      <!-- NEW: Daily Progress Tracker -->
-      <div class="progress-wrapper">
-        <div class="progress-info">
-          <span>Daily Progress</span>
-          <span id="progressText">0%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="dayProgress"></div>
-        </div>
-      </div>
-    </div>
+    <!-- THIS IS THE CONTAINER THAT FIXES YOUR SPACING! -->
+    <div class="container">
+      <div class="day-header">
+        <div class="date" id="currentDate"></div>
+        <h2 id="currentTitle"></h2>
 
-    <!-- UPDATED: Daily Insight Box (Now explicitly "Fun Fact") -->
-    <div class="daily-insight" id="dailyInsight">
-      <div class="insight-icon" id="insightIcon"></div>
-      <div class="insight-content">
-        <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Fun Fact</h4>
-        <p id="insightText">Loading...</p>
-      </div>
-    </div>
+        <div class="header-widgets">
+          <div class="live-weather" id="liveWeather">
+            <i class="fa-solid fa-spinner fa-spin"></i> Loading weather...
+          </div>
 
+          <div class="progress-wrapper">
+            <div class="progress-info">
+              <span>Daily Progress</span>
+              <span id="progressText">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="dayProgress"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="daily-insight" id="dailyInsight">
+        <div class="insight-icon" id="insightIcon"></div>
+        <div class="insight-content">
+          <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Fun Fact</h4>
+          <p id="insightText">Loading...</p>
+        </div>
+      </div>
 
       <div class="timeline" id="timeline"></div>
 
@@ -99,19 +96,19 @@
             <h4>Baggage</h4>
             <p>Outbound: 20kg each<br />Return: Nic/Russ/Ryan 25kg, Sue 30kg</p>
           </div>
-          <!-- NEW: Winter Weather Card -->
           <div class="info-card highlight-card">
             <h4><i class="fa-solid fa-cloud-moon"></i> Winter Profile</h4>
             <p>
-              <strong>Temps:</strong> 8°C - 18°C<br />
-              <strong>Sunrise:</strong> ~7:15 AM<br />
-              <strong>Sunset:</strong> ~5:20 PM<br />
-              <em>Tip: Coastal winds are chilly. Dress in layers!</em>
+              <strong>Temps:</strong> 8°C - 18°C<br /><strong>Sunrise:</strong>
+              ~7:15 AM<br /><strong>Sunset:</strong> ~5:20 PM<br /><em
+                >Tip: Coastal winds are chilly. Dress in layers!</em
+              >
             </p>
           </div>
         </div>
       </div>
     </div>
+    <!-- END OF CONTAINER -->
 
     <div class="fab" id="fab">
       <button class="fab-btn" id="fabBtn">
@@ -129,10 +126,8 @@
 
     <div class="currency-widget" id="currencyWidget">
       <button class="currency-toggle" id="currencyToggle">
-        <i class="fa-solid fa-dollar-sign"></i>
-        <span>SGD/AUD</span>
+        <i class="fa-solid fa-dollar-sign"></i><span>SGD/AUD</span>
       </button>
-
       <div class="currency-panel" id="currencyPanel">
         <div class="currency-header">
           <h3>Currency Exchange</h3>
@@ -140,7 +135,6 @@
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
-
         <div class="exchange-rate">
           <div class="rate-display">
             <div class="rate-label">Live Rate</div>
@@ -148,7 +142,6 @@
             <div class="rate-updated" id="lastUpdated">Fetching rates...</div>
           </div>
         </div>
-
         <div class="converter">
           <div class="converter-row">
             <div class="currency-input-group">
@@ -169,7 +162,6 @@
             </div>
           </div>
         </div>
-
         <div class="quick-amounts">
           <div class="quick-title">Quick Convert</div>
           <div class="quick-grid">

@@ -1331,12 +1331,12 @@ function setupCurrencyWidget() {
   setInterval(fetchExchangeRate, 300000);
 }
 
-// NEW FUNCTION: Live Weather
+// NEW FUNCTION: Live Weather (With graceful fallback)
 async function fetchWeather(dayNum) {
   const weatherDiv = document.getElementById("liveWeather");
   if (!weatherDiv) return;
   weatherDiv.innerHTML =
-    '<i class="fa-solid fa-spinner fa-spin"></i> Loading weather...';
+    '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
 
   const isDownSouth = dayNum <= 5;
   const lat = isDownSouth ? -33.955 : -31.9505;
@@ -1347,6 +1347,7 @@ async function fetchWeather(dayNum) {
     const response = await fetch(
       `[https://api.open-meteo.com/v1/forecast?latitude=](https://api.open-meteo.com/v1/forecast?latitude=)\${lat}&longitude=\${lon}&current_weather=true`
     );
+    if (!response.ok) throw new Error("API blocked or unavailable");
     const data = await response.json();
     const temp = Math.round(data.current_weather.temperature);
     const code = data.current_weather.weathercode;
@@ -1360,7 +1361,9 @@ async function fetchWeather(dayNum) {
 
     weatherDiv.innerHTML = `<i class="fa-solid \${icon}"></i> \${temp}°C in \${locationName}`;
   } catch (error) {
-    weatherDiv.innerHTML = `<i class="fa-solid fa-cloud"></i> Weather unavailable`;
+    // If the browser blocks the API, show the historical Winter Average instead of an error!
+    const fallbackTemp = isDownSouth ? "15" : "18";
+    weatherDiv.innerHTML = `<i class="fa-solid fa-cloud-sun"></i> ~\${fallbackTemp}°C (Winter Avg)`;
   }
 }
 
