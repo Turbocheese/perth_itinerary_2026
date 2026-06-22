@@ -133,7 +133,6 @@ const tripData = [
         desc: "Sue's workout (ends 6:15pm)",
         tag: "exercise",
         duration: "55 mins",
-        tip: "A perfect way to warm up the body on a chilly winter evening!",
       },
       {
         time: "19:15",
@@ -499,7 +498,7 @@ const tripData = [
     activities: [
       {
         time: "09:00",
-        desc: "Coffee at Exile Coffee, then hike Bells Rapids (4.5km River Walk & Goat Trail)",
+        desc: "Coffee at Exile Coffee, then hike Bells Rapids",
         address: "Orlov Trail, Cathedral Ave, Brigadoon WA 6069",
         tag: "activity",
         duration: "2h 50m",
@@ -625,7 +624,7 @@ const tripData = [
       },
       {
         time: "13:45",
-        desc: "Shopping: Common Ground, Ginger Pudding Vintage, Bill Campbell Books, Record Finder",
+        desc: "Shopping: Common Ground, Ginger Pudding Vintage, Bill Campbell Books",
         address: "61 High St, Fremantle WA 6160",
         tag: "activity",
         duration: "1h 15m",
@@ -690,7 +689,7 @@ const tripData = [
       },
       {
         time: "14:00",
-        desc: "Sue's shopping at Karrinyup (Lululemon, Lorna Jane, Uniqlo)",
+        desc: "Sue's shopping at Karrinyup",
         address: "200 Karrinyup Rd, Karrinyup WA 6018",
         tag: "activity",
         duration: "1h 45m",
@@ -698,7 +697,7 @@ const tripData = [
       },
       {
         time: "15:45",
-        desc: "Groceries at Woolworths Karrinyup for dinner",
+        desc: "Groceries at Woolworths Karrinyup",
         address: "200 Karrinyup Rd, Karrinyup WA 6018",
         tag: "activity",
         duration: "1h 35m",
@@ -766,7 +765,7 @@ const tripData = [
       },
       {
         time: "12:30",
-        desc: "Lunch at The Pickled Octopus food truck",
+        desc: "Lunch at The Pickled Octopus",
         address: "Dog Beach, Fremantle WA 6162",
         tag: "activity",
         duration: "1.5 hours",
@@ -797,14 +796,14 @@ const tripData = [
       },
       {
         time: "17:15",
-        desc: "Sue's final workout (throw away gloves)",
+        desc: "Sue's final workout",
         tag: "exercise",
         duration: "1.5 hours",
         tip: "A good heavy session before being seated on an airplane for 5 hours tomorrow.",
       },
       {
         time: "18:45",
-        desc: "Farewell dinner at Salt & Pepper Grill (Table for 5)",
+        desc: "Farewell dinner at Salt & Pepper Grill",
         address: "55 George St, Kensington WA 6151",
         tag: "booking",
         duration: "2 hours",
@@ -880,6 +879,7 @@ function loadTheme() {
 
 function setupThemeToggle() {
   const themeToggle = document.getElementById("themeToggle");
+  if (!themeToggle) return;
   const currentTheme =
     document.documentElement.getAttribute("data-theme") || "light";
 
@@ -904,6 +904,7 @@ function setupThemeToggle() {
 
 function createDayTabs() {
   const tabsContainer = document.getElementById("dayTabs");
+  if (!tabsContainer) return;
   tabsContainer.innerHTML = "";
 
   tripData.forEach(function (day) {
@@ -941,35 +942,45 @@ function showDay(dayNum) {
   });
   if (!dayData) return;
 
-  // Set Header
-  document.getElementById("currentDate").textContent = dayData.date;
-  document.getElementById("currentTitle").textContent = dayData.title;
+  // Header Elements
+  if (document.getElementById("currentDate"))
+    document.getElementById("currentDate").textContent = dayData.date;
+  if (document.getElementById("currentTitle"))
+    document.getElementById("currentTitle").textContent = dayData.title;
 
-  // NEW: Set Daily Insight Fact & Icon
-  document.getElementById("insightText").textContent = dayData.fact;
-  document.getElementById("insightIcon").innerHTML = '<i class="fa-solid ' + dayData.icon + '"></i>';';
+  // Daily Insight / Fact
+  if (document.getElementById("insightText"))
+    document.getElementById("insightText").textContent = dayData.fact;
+  if (document.getElementById("insightIcon"))
+    document.getElementById("insightIcon").innerHTML =
+      '<i class="fa-solid ' + dayData.icon + '"></i>';
 
   const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
-  allActivities = [];
+  if (timeline) {
+    timeline.innerHTML = "";
+    allActivities = [];
 
-  dayData.activities.forEach(function (activity, index) {
-    const activityId = "day" + dayNum + "-activity" + index;
-    const card = createActivityCard(activity, activityId);
-    timeline.appendChild(card);
-    allActivities.push({
-      element: card,
-      text: (
-        activity.desc +
-        " " +
-        (activity.address || "") +
-        " " +
-        (activity.tip || "")
-      ).toLowerCase(),
+    dayData.activities.forEach(function (activity, index) {
+      const activityId = "day" + dayNum + "-activity" + index;
+      const card = createActivityCard(activity, activityId);
+      timeline.appendChild(card);
+      allActivities.push({
+        element: card,
+        text: (
+          activity.desc +
+          " " +
+          (activity.address || "") +
+          " " +
+          (activity.tip || "")
+        ).toLowerCase(),
+      });
     });
-  });
+  }
+
+  // Trigger New Features
   fetchWeather(dayNum);
-  setTimeout(updateProgress, 100); // Small delay to let DOM render
+  setTimeout(updateProgress, 100);
+
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -1003,8 +1014,7 @@ function createActivityCard(activity, activityId) {
     (isChecked ? "checked" : "") +
     " />";
   html += '<div class="tag ' + tagClass + '">' + tagLabel + "</div>";
-  html += "</div>";
-  html += "</div>";
+  html += "</div></div>";
   html += '<div class="desc">' + activity.desc + "</div>";
 
   if (activity.duration) {
@@ -1028,25 +1038,25 @@ function createActivityCard(activity, activityId) {
     html +=
       '<a href="' +
       mapUrl +
-      '" target="_blank" rel="noopener" class="map-link">';
-    html += '<i class="fa-solid fa-location-dot"></i> Open Map';
-    html += "</a>";
+      '" target="_blank" rel="noopener" class="map-link"><i class="fa-solid fa-location-dot"></i> Open Map</a>';
   }
 
   card.innerHTML = html;
 
   const checkbox = card.querySelector(".activity-checkbox");
-  checkbox.addEventListener("change", function () {
-    saveCheckboxState(activityId, this.checked);
-    if (this.checked) {
-      card.style.opacity = "0.6";
-      card.style.textDecoration = "line-through";
-    } else {
-      card.style.opacity = "1";
-      card.style.textDecoration = "none";
-    }
-    updateProgress();
-  });
+  if (checkbox) {
+    checkbox.addEventListener("change", function () {
+      saveCheckboxState(activityId, this.checked);
+      if (this.checked) {
+        card.style.opacity = "0.6";
+        card.style.textDecoration = "line-through";
+      } else {
+        card.style.opacity = "1";
+        card.style.textDecoration = "none";
+      }
+      updateProgress();
+    });
+  }
 
   if (isChecked) {
     card.style.opacity = "0.6";
@@ -1072,18 +1082,18 @@ function getCheckboxState(id) {
 }
 
 function startCountdown() {
+  const countdown = document.getElementById("countdown");
+  if (!countdown) return;
   const tripStart = new Date("June 26, 2026 09:00:00").getTime();
 
   function update() {
     const now = new Date().getTime();
     const diff = tripStart - now;
-    const countdown = document.getElementById("countdown");
 
     if (diff < 0) {
       countdown.innerHTML = '<i class="fa-solid fa-plane"></i> Trip Started!';
       return;
     }
-
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     countdown.innerHTML =
       '<i class="fa-solid fa-calendar"></i> ' + days + " days until departure";
@@ -1096,11 +1106,11 @@ function startCountdown() {
 function setupSearch() {
   const searchBox = document.getElementById("searchBox");
   const searchInfo = document.getElementById("searchInfo");
+  if (!searchBox || !searchInfo) return;
   let searchTimer;
 
   searchBox.addEventListener("input", function (e) {
     clearTimeout(searchTimer);
-
     searchTimer = setTimeout(function () {
       const query = e.target.value.toLowerCase().trim();
 
@@ -1122,7 +1132,6 @@ function setupSearch() {
         if (item.text.includes(query)) {
           item.element.style.display = "block";
           found++;
-
           const desc = item.element.querySelector(".desc");
           let html = desc.innerHTML;
           html = html.replace(/<mark class="highlight">|<\/mark>/g, "");
@@ -1133,7 +1142,6 @@ function setupSearch() {
           item.element.style.display = "none";
         }
       });
-
       searchInfo.textContent = found + " result" + (found !== 1 ? "s" : "");
     }, 300);
   });
@@ -1150,7 +1158,6 @@ function setupFAB() {
   fabBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     fab.classList.toggle("active");
-
     const icon = fabBtn.querySelector("i");
     if (icon) {
       icon.className = fab.classList.contains("active")
@@ -1172,7 +1179,6 @@ function setupFAB() {
     } else {
       alert("Trip not active yet or already ended");
     }
-
     closeFAB();
   });
 
@@ -1189,26 +1195,21 @@ function setupFAB() {
       navigator.clipboard.writeText(window.location.href);
       alert("Link copied to clipboard!");
     }
-
     closeFAB();
   });
 
   document.addEventListener("click", function (e) {
-    if (fab && !fab.contains(e.target)) {
-      closeFAB();
-    }
+    if (fab && !fab.contains(e.target)) closeFAB();
   });
 }
 
 function closeFAB() {
   const fab = document.getElementById("fab");
   const fabBtn = document.getElementById("fabBtn");
-  fab.classList.remove("active");
+  if (fab) fab.classList.remove("active");
   if (fabBtn) {
     const icon = fabBtn.querySelector("i");
-    if (icon) {
-      icon.className = "fa-solid fa-ellipsis";
-    }
+    if (icon) icon.className = "fa-solid fa-ellipsis";
   }
 }
 
@@ -1221,24 +1222,25 @@ function setupCurrencyWidget() {
   const swapBtn = document.getElementById("swapBtn");
   const quickBtns = document.querySelectorAll(".quick-btn");
 
+  if (!widget || !toggle || !sgdInput || !audInput) return;
+
   let currentRate = 0;
   let isReversed = false;
 
   toggle.addEventListener("click", function () {
     widget.classList.toggle("active");
-    if (widget.classList.contains("active") && currentRate === 0) {
+    if (widget.classList.contains("active") && currentRate === 0)
       fetchExchangeRate();
-    }
   });
 
-  closeBtn.addEventListener("click", function () {
-    widget.classList.remove("active");
-  });
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () {
+      widget.classList.remove("active");
+    });
+  }
 
   document.addEventListener("click", function (e) {
-    if (!widget.contains(e.target)) {
-      widget.classList.remove("active");
-    }
+    if (!widget.contains(e.target)) widget.classList.remove("active");
   });
 
   sgdInput.addEventListener("input", function () {
@@ -1248,33 +1250,32 @@ function setupCurrencyWidget() {
     }
   });
 
-  swapBtn.addEventListener("click", function () {
-    isReversed = !isReversed;
-    const labels = document.querySelectorAll(".currency-input-group label");
+  if (swapBtn) {
+    swapBtn.addEventListener("click", function () {
+      isReversed = !isReversed;
+      const labels = document.querySelectorAll(".currency-input-group label");
 
-    if (isReversed) {
-      sgdInput.removeAttribute("readonly");
-      audInput.removeAttribute("readonly");
-      sgdInput.setAttribute("readonly", "true");
-      audInput.removeAttribute("readonly");
-
-      // FIX: Use array indexes  and  to target the specific labels
-      labels.textContent = "Australian Dollar (AUD)";
-      labels.textContent = "Singapore Dollar (SGD)";
-
-      audInput.addEventListener("input", convertReverse);
-    } else {
-      audInput.setAttribute("readonly", "true");
-      sgdInput.removeAttribute("readonly");
-
-      // FIX: Use array indexes  and  here too
-      labels.textContent = "Singapore Dollar (SGD)";
-      labels.textContent = "Australian Dollar (AUD)";
-
-      audInput.removeEventListener("input", convertReverse);
-      sgdInput.dispatchEvent(new Event("input"));
-    }
-  });
+      if (isReversed) {
+        sgdInput.removeAttribute("readonly");
+        audInput.removeAttribute("readonly");
+        sgdInput.setAttribute("readonly", "true");
+        if (labels.length > 1) {
+          labels.textContent = "Australian Dollar (AUD)";
+          labels.textContent = "Singapore Dollar (SGD)";
+        }
+        audInput.addEventListener("input", convertReverse);
+      } else {
+        audInput.setAttribute("readonly", "true");
+        sgdInput.removeAttribute("readonly");
+        if (labels.length > 1) {
+          labels.textContent = "Singapore Dollar (SGD)";
+          labels.textContent = "Australian Dollar (AUD)";
+        }
+        audInput.removeEventListener("input", convertReverse);
+        sgdInput.dispatchEvent(new Event("input"));
+      }
+    });
+  }
 
   function convertReverse() {
     const aud = parseFloat(audInput.value) || 0;
@@ -1295,8 +1296,10 @@ function setupCurrencyWidget() {
   });
 
   function fetchExchangeRate() {
-    document.getElementById("exchangeRate").textContent = "Loading...";
-    document.getElementById("lastUpdated").textContent = "Fetching rates...";
+    const rateDisplay = document.getElementById("exchangeRate");
+    const updatedDisplay = document.getElementById("lastUpdated");
+    if (rateDisplay) rateDisplay.textContent = "Loading...";
+    if (updatedDisplay) updatedDisplay.textContent = "Fetching rates...";
 
     fetch("https://api.exchangerate-api.com/v4/latest/SGD")
       .then(function (response) {
@@ -1304,43 +1307,43 @@ function setupCurrencyWidget() {
       })
       .then(function (data) {
         currentRate = data.rates.AUD;
-        document.getElementById("exchangeRate").textContent =
-          "1 SGD = " + currentRate.toFixed(4) + " AUD";
-
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString("en-SG", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        document.getElementById("lastUpdated").textContent =
-          "Updated at " + timeStr;
-
+        if (rateDisplay)
+          rateDisplay.textContent =
+            "1 SGD = " + currentRate.toFixed(4) + " AUD";
+        if (updatedDisplay) {
+          const now = new Date();
+          updatedDisplay.textContent =
+            "Updated at " +
+            now.toLocaleTimeString("en-SG", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+        }
         sgdInput.dispatchEvent(new Event("input"));
       })
       .catch(function (error) {
-        document.getElementById("exchangeRate").textContent =
-          "Error loading rate";
-        document.getElementById("lastUpdated").textContent = "Please try again";
-        console.error("Exchange rate error:", error);
+        if (rateDisplay) rateDisplay.textContent = "Error loading rate";
+        if (updatedDisplay) updatedDisplay.textContent = "Please try again";
       });
   }
 
   fetchExchangeRate();
   setInterval(fetchExchangeRate, 300000);
 }
+
+// NEW FUNCTION: Live Weather
 async function fetchWeather(dayNum) {
   const weatherDiv = document.getElementById("liveWeather");
+  if (!weatherDiv) return;
   weatherDiv.innerHTML =
-    '<i class="fa-solid fa-spinner fa-spin"></i> Fetching...';
+    '<i class="fa-solid fa-spinner fa-spin"></i> Loading weather...';
 
-  // Days 1-5 are in Margaret River. Days 6-11 are in Perth/Fremantle.
   const isDownSouth = dayNum <= 5;
   const lat = isDownSouth ? -33.955 : -31.9505;
   const lon = isDownSouth ? 115.075 : 115.8605;
   const locationName = isDownSouth ? "Margaret River" : "Perth";
 
   try {
-    // Open-Meteo is a free API that requires no API key!
     const response = await fetch(
       `[https://api.open-meteo.com/v1/forecast?latitude=](https://api.open-meteo.com/v1/forecast?latitude=)\${lat}&longitude=\${lon}&current_weather=true`
     );
@@ -1348,13 +1351,12 @@ async function fetchWeather(dayNum) {
     const temp = Math.round(data.current_weather.temperature);
     const code = data.current_weather.weathercode;
 
-    // Map WMO weather codes to FontAwesome icons
     let icon = "fa-cloud";
-    if (code === 0) icon = "fa-sun"; // Clear sky
-    else if (code >= 1 && code <= 3) icon = "fa-cloud-sun"; // Partly cloudy
-    else if (code >= 45 && code <= 48) icon = "fa-smog"; // Fog
-    else if (code >= 51 && code <= 67) icon = "fa-cloud-rain"; // Rain
-    else if (code >= 71) icon = "fa-snowflake"; // Snow/Hail
+    if (code === 0) icon = "fa-sun";
+    else if (code >= 1 && code <= 3) icon = "fa-cloud-sun";
+    else if (code >= 45 && code <= 48) icon = "fa-smog";
+    else if (code >= 51 && code <= 67) icon = "fa-cloud-rain";
+    else if (code >= 71) icon = "fa-snowflake";
 
     weatherDiv.innerHTML = `<i class="fa-solid \${icon}"></i> \${temp}°C in \${locationName}`;
   } catch (error) {
@@ -1362,15 +1364,24 @@ async function fetchWeather(dayNum) {
   }
 }
 
+// NEW FUNCTION: Progress Tracker
 function updateProgress() {
   const checkboxes = document.querySelectorAll(".activity-checkbox");
-  if (checkboxes.length === 0) return;
+  const dayProgress = document.getElementById("dayProgress");
+  const progressText = document.getElementById("progressText");
+
+  if (!dayProgress || !progressText) return;
+  if (checkboxes.length === 0) {
+    dayProgress.style.width = "0%";
+    progressText.textContent = "0% (0/0)";
+    return;
+  }
 
   const checkedBoxes = document.querySelectorAll(".activity-checkbox:checked");
   const percent = Math.round((checkedBoxes.length / checkboxes.length) * 100);
 
-  document.getElementById("dayProgress").style.width = percent + "%";
-  document.getElementById("progressText").textContent =
+  dayProgress.style.width = percent + "%";
+  progressText.textContent =
     percent + "% (" + checkedBoxes.length + "/" + checkboxes.length + ")";
 }
 
