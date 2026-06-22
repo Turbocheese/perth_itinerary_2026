@@ -1,14 +1,20 @@
 {
-    "name": "Perth Itinerary 2026",
-    "short_name": "Perth 2026",
-    "start_url": "/",
-    "display": "standalone",
-    "icons": [
-      {
-        "src": "icon.svg",
-        "sizes": "any",
-        "type": "image/svg+xml"
-      }
-    ]
-  }
-  
+  "name": "Perth Itinerary 2026",
+  "short_name": "Perth 2026",
+  "description": "Family trip to Perth, Australia - June 26 to July 5, 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a5f",
+  "theme_color": "#1e3a5f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["travel", "lifestyle"],
+  "lang": "en-US"
+}

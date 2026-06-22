@@ -1,3 +1,23 @@
+// ===== TOUCH DEVICE DETECTION & OPTIMIZATION =====
+
+(function detectAndOptimize() {
+  const isTouchDevice =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0 ||
+    navigator.msMaxTouchPoints > 0;
+
+  if (isTouchDevice) {
+    document.documentElement.classList.add("touch-device");
+    console.log("📱 Touch device detected - Performance mode enabled");
+
+    // Reduce animation duration for mobile
+    document.documentElement.style.setProperty("--animation-speed", "0.2s");
+  } else {
+    document.documentElement.classList.add("non-touch-device");
+    document.documentElement.style.setProperty("--animation-speed", "0.3s");
+  }
+})();
+
 // ===== TRIP DATA =====
 
 const tripData = [
@@ -2039,37 +2059,169 @@ function setupTripInfo() {
 // --- Initialize App on Page Load ---
 
 window.addEventListener("load", init);
-// ===== AUTO-HIDE SEARCH & NAV ON SCROLL =====
+// ===== OPTIMIZED SCROLL DETECTION FOR TOUCH =====
 
 let lastScrollTop = 0;
-let scrollTimeout;
+let ticking = false;
+let scrollThrottle;
 
-window.addEventListener("scroll", function () {
-  clearTimeout(scrollTimeout);
+function updateScrollState() {
+  const currentScroll =
+    window.pageYOffset || document.documentElement.scrollTop;
 
-  scrollTimeout = setTimeout(function () {
-    const currentScroll =
-      window.pageYOffset || document.documentElement.scrollTop;
+  // Increased threshold for touch to prevent accidental triggers
+  if (currentScroll <= 80) {
+    document.body.classList.add("at-top");
+    document.body.classList.remove("scrolling-down", "scrolling-up");
+  } else if (currentScroll > lastScrollTop + 10 && currentScroll > 200) {
+    document.body.classList.add("scrolling-down");
+    document.body.classList.remove("scrolling-up", "at-top");
+  } else if (currentScroll < lastScrollTop - 10) {
+    document.body.classList.add("scrolling-up");
+    document.body.classList.remove("scrolling-down", "at-top");
+  }
 
-    // At the very top
-    if (currentScroll <= 50) {
-      document.body.classList.add("at-top");
-      document.body.classList.remove("scrolling-down", "scrolling-up");
+  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+  ticking = false;
+}
+
+window.addEventListener(
+  "scroll",
+  function () {
+    if (!ticking) {
+      // Use RAF for smooth 60fps updates
+      window.requestAnimationFrame(updateScrollState);
+      ticking = true;
     }
-    // Scrolling down
-    else if (currentScroll > lastScrollTop && currentScroll > 150) {
-      document.body.classList.add("scrolling-down");
-      document.body.classList.remove("scrolling-up", "at-top");
-    }
-    // Scrolling up
-    else if (currentScroll < lastScrollTop) {
-      document.body.classList.add("scrolling-up");
-      document.body.classList.remove("scrolling-down", "at-top");
-    }
+  },
+  { passive: true }
+); // Passive listener for better scroll performance
 
-    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-  }, 100); // Debounce for smoother performance
-});
-
-// Initialize at-top state
 document.body.classList.add("at-top");
+
+// ===== SCROLL TO TOP BUTTON =====
+
+(function setupScrollToTop() {
+  const scrollBtn = document.getElementById("scrollToTop");
+  if (!scrollBtn) return;
+
+  // Show/hide button based on scroll position
+  window.addEventListener("scroll", function () {
+    if (window.pageYOffset > 500) {
+      scrollBtn.classList.add("visible");
+    } else {
+      scrollBtn.classList.remove("visible");
+    }
+  });
+
+  // Smooth scroll to top when clicked
+  scrollBtn.addEventListener("click", function () {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+})();
+// ===== SCROLL TO TOP BUTTON =====
+
+(function setupScrollToTop() {
+  const scrollBtn = document.getElementById("scrollToTop");
+  if (!scrollBtn) return;
+
+  window.addEventListener("scroll", function () {
+    if (window.pageYOffset > 500) {
+      scrollBtn.classList.add("visible");
+    } else {
+      scrollBtn.classList.remove("visible");
+    }
+  });
+
+  scrollBtn.addEventListener("click", function () {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+})();
+
+// ===== PWA INSTALL PROMPT =====
+
+let deferredPrompt;
+
+window.addEventListener("beforeinstallprompt", function (e) {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const installPrompt = document.getElementById("installPrompt");
+  const installBtn = document.getElementById("installBtn");
+  const closeBtn = document.getElementById("closeInstall");
+
+  if (!installPrompt) return;
+
+  setTimeout(function () {
+    installPrompt.classList.add("show");
+  }, 5000);
+
+  if (installBtn) {
+    installBtn.addEventListener("click", function () {
+      installPrompt.classList.remove("show");
+      deferredPrompt.prompt();
+
+      deferredPrompt.userChoice.then(function (choiceResult) {
+        if (choiceResult.outcome === "accepted") {
+          console.log("✅ App installed!");
+        }
+        deferredPrompt = null;
+      });
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function () {
+      installPrompt.classList.remove("show");
+    });
+  }
+});
+// ===== TOUCH-OPTIMIZED BUTTON FEEDBACK =====
+
+(function optimizeTouchButtons() {
+  if (!document.documentElement.classList.contains("touch-device")) return;
+
+  // Add instant visual feedback to all clickable elements
+  const touchTargets = document.querySelectorAll(
+    "button, .tab, .map-link, .activity, .search-result-item"
+  );
+
+  touchTargets.forEach(function (element) {
+    element.addEventListener(
+      "touchstart",
+      function () {
+        this.style.opacity = "0.7";
+      },
+      { passive: true }
+    );
+
+    element.addEventListener(
+      "touchend",
+      function () {
+        this.style.opacity = "1";
+      },
+      { passive: true }
+    );
+
+    element.addEventListener(
+      "touchcancel",
+      function () {
+        this.style.opacity = "1";
+      },
+      { passive: true }
+    );
+  });
+})();
+
+// Run after DOM loads
+window.addEventListener("load", optimizeTouchButtons);
+
+window.addEventListener("appinstalled", function () {
+  console.log("🎉 Perth Trip 2026 installed successfully!");
+});

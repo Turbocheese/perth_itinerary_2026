@@ -308,7 +308,46 @@
         // Auto mode will be calculated by main script
       })();
     </script>
+<!-- Scroll to Top Button -->
+<button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top">
+  <i class="fa-solid fa-chevron-up"></i>
+</button>
 
-    <script src="script.js?v=13"></script>
+<script src="script.js?v=13"></script>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top">
+      <i class="fa-solid fa-chevron-up"></i>
+    </button>
+
+    <!-- Install App Prompt -->
+    <div class="install-prompt" id="installPrompt">
+      <i class="fa-solid fa-download"></i>
+      <span>Install Perth Trip 2026 app?</span>
+      <button id="installBtn">Install</button>
+      <button class="close-install" id="closeInstall">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('✅ Service Worker registered:', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('❌ Service Worker registration failed:', error);
+            });
+        });
+      }
+    </script>
+
+    <script src="script.js?v=14"></script>
+  </body>
+</html>
+
   </body>
 </html>
